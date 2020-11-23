@@ -17,7 +17,7 @@ type Function struct {
 }
 
 const (
-	httpImport         = `"net/http"`
+	httpImport = `"net/http"`
 )
 
 type paramType int
@@ -36,7 +36,7 @@ type functionSignature struct {
 // Valid function signatures are like so (defined in: github.com/cloudevents/sdk-go/v2/client/receiver.go):
 // * func(http.ResponseWriter, *http.Request)
 var validFunctions = map[string]functionSignature{
-	"func(http.ResponseWriter, *http.Request)":           functionSignature{in: []paramType{responseWriterType, ptrRequestType}, out: []paramType{}},
+	"func(http.ResponseWriter, *http.Request)": functionSignature{in: []paramType{responseWriterType, ptrRequestType}, out: []paramType{}},
 }
 
 // imports keeps track of which files that we care about are imported as which
@@ -44,11 +44,11 @@ var validFunctions = map[string]functionSignature{
 // 	nethttp "net/http"
 // localHTTPImport would be set to nethttp
 type imports struct {
-	localHTTPImport       string
+	localHTTPImport string
 }
 
 type FunctionDetails struct {
-	Name string
+	Name      string
 	Package   string
 	Signature string
 }

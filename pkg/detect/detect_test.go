@@ -6,11 +6,11 @@ func TestAllCases(t *testing.T) {
 
 	tests := map[string]*FunctionDetails{
 		"./testdata/f1.go": &FunctionDetails{
-			Name: "Receive",
+			Name:      "Receive",
 			Signature: "func(http.ResponseWriter, *http.Request)",
 		},
 		"./testdata/f2.go": &FunctionDetails{
-			Name: "Receive2",
+			Name:      "Receive2",
 			Signature: "func(http.ResponseWriter, *http.Request)",
 		},
 		"./testdata/f3-bad.go": nil,
