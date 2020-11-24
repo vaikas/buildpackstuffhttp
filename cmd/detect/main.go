@@ -73,9 +73,6 @@ func main() {
 	// We yank the base package from go.mod and append CE_GO_PACKAGE into it
 	// if it's given.
 	goPackage := envConfig.HTTPGoPackage
-	if goPackage == "" {
-		goPackage = "./"
-	}
 	if !strings.HasSuffix(goPackage, "/") {
 		goPackage = goPackage + "/"
 	}
