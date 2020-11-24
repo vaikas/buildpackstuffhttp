@@ -1,0 +1,6 @@
+# github.com/kelseyhightower/envconfig v1.4.0
+## explicit
+github.com/kelseyhightower/envconfig
+# github.com/vaikas/gofunctypechecker v0.0.0-20201124220306-6636ad28e8e8
+## explicit
+github.com/vaikas/gofunctypechecker/pkg/detect

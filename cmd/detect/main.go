@@ -9,7 +9,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/vaikas/buildpackstuffhttp/pkg/detect"
+	"github.com/kelseyhightower/envconfig"
+	"github.com/vaikas/gofunctypechecker/pkg/detect"
 )
 
 const supportedFuncs = `
@@ -35,6 +36,11 @@ package = "PACKAGE"
 function = "HTTP_GO_FUNCTION"
 `
 
+type EnvConfig struct {
+	HTTPGoPackage string `envconfig:"HTTP_GO_PACKAGE" default:"./"`
+	HTTPGoFunction string `envconfig:"HTTP_GO_FUNCTION" default:"Handler"`
+}
+
 func printSupportedFunctionsAndExit() {
 	fmt.Println(supportedFuncs)
 	os.Exit(100)
@@ -51,6 +57,12 @@ func main() {
 		os.Exit(100)
 	}
 
+	// Grab the env variables
+	var envConfig EnvConfig
+	if err := envconfig.Process("http", &envConfig); err != nil {
+		log.Printf("Failed to process env variables: %s\n", err)
+	}
+
 	moduleName, err := readModuleName()
 	if err != nil {
 		log.Println("Failed to read go.mod file: ", err)
@@ -60,11 +72,7 @@ func main() {
 	// There are two ENV variables that control what should be checked.
 	// We yank the base package from go.mod and append CE_GO_PACKAGE into it
 	// if it's given.
-	// TODO: Use library for these...
-	goPackage := os.Getenv("HTTP_GO_PACKAGE")
-	if goPackage == "" {
-		goPackage = "./"
-	}
+	goPackage := envConfig.HTTPGoPackage
 	if !strings.HasSuffix(goPackage, "/") {
 		goPackage = goPackage + "/"
 	}
@@ -74,10 +82,7 @@ func main() {
 	}
 	log.Println("Using relative path to look for function: ", goPackage)
 
-	goFunction := os.Getenv("HTTP_GO_FUNCTION")
-	if goFunction == "" {
-		goFunction = "Handler"
-	}
+	goFunction := envConfig.HTTPGoFunction
 
 	planFileName := os.Args[2]
 	log.Println("using plan file: ", planFileName)
@@ -89,6 +94,15 @@ func main() {
 		log.Printf("failed to read directory %s : %s\n", goPackage, err)
 		printSupportedFunctionsAndExit()
 	}
+
+	// Valid function signature for HTTP Handler is:
+	// func(http.ResponseWriter, *http.Request)
+	var validFunctions = []detect.FunctionSignature{
+		{In: []detect.FunctionArg{
+			{ImportPath: "net/http", Name: "ResponseWriter"},
+			{ImportPath: "net/http", Name: "Request", Pointer: true},
+		}}}
+	detector := detect.NewDetector(validFunctions)
 
 	for _, f := range files {
 		log.Printf("Processing file %s\n", f)
@@ -107,7 +121,12 @@ func main() {
 			printSupportedFunctionsAndExit()
 		}
 		f := &detect.Function{File: f, Source: string(srcbuf)}
-		if deets := detect.CheckFile(f); deets != nil {
+		deets, err := detector.CheckFile(f)
+		if err != nil {
+			log.Printf("Failed to create a detector: %s\n", err)
+			os.Exit(100)
+		}
+		if deets != nil {
 			log.Printf("Found supported function %q in package %q signature %q", deets.Name, deets.Package, deets.Signature)
 			// If the user didn't specify a specific function, use it. If they specified the function, make sure it
 			// matches what we found.
