@@ -1,0 +1,4 @@
+github.com/kelseyhightower/envconfig v1.4.0 h1:Im6hONhd3pLkfDFsbRgu68RDNkGF1r3dvMUtDTo2cv8=
+github.com/kelseyhightower/envconfig v1.4.0/go.mod h1:cccZRl6mQpaq41TPp5QxidR+Sa3axMbJDNb//FQX6Gg=
+github.com/vaikas/gofunctypechecker v0.0.0-20201124220306-6636ad28e8e8 h1:Fue00YCkSaxj9RHgW7u++JJHb97gJE9E6+TJARrBG/0=
+github.com/vaikas/gofunctypechecker v0.0.0-20201124220306-6636ad28e8e8/go.mod h1:cnv1CLZgzmMe3vQ36XsUz1TAYqEQRuKW9PP1/izyhJg=
